@@ -39,6 +39,16 @@ Two 2018 Geoscience Australia ELVIS tiles (ICSM Level 3, 0.44 ground points/m²,
 full 4 × 2 km tile union: 887,778 cells, a median of 4 returns per cell, 3.7% voids.
 The block itself falls 309 m, from 887.9 to 1197.0 m AHD.
 
+![Elevation with 10 m contours](docs/elevation_contours_3m.png)
+
+*The land itself: hillshaded elevation with contours every 10 m, labelled every 50 m.
+Contours are drawn on the 3 m surface after a 4.5 m Gaussian smooth, which suppresses
+return-density noise without moving the lines anywhere a walker would notice. The
+contour interval is the honest one for this terrain — at a median grade of 29% the
+10 m lines sit about 35 m apart on the ground, close enough to read the shape of a
+spur and far enough apart to stay legible on the steep faces, where they crowd to
+25 m or less.*
+
 ![Grade and wetness as a bivariate map](docs/slope_twi_bivariate.png)
 
 *Grade and the topographic wetness index on one map: red is steep, blue is wet, dark
