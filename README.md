@@ -15,24 +15,7 @@ slope, aspect = slope_aspect(dem, grid.res)
 hor, reach = horizon_angles(dem, grid.res, n_azimuth=32, max_distance=5000)
 ```
 
-## The orientation trap
-
-`assert_north_up(dem, aspect)` exists because of a real error. Binning points the
-natural way — `(y - y_min)/res` — puts row 0 at the **south** edge; GIS rasters put
-it at the **north** edge. Mixing the two mirrors the grid and inverts aspect.
-
-In the Northern Hemisphere the mistake hides, because sun-facing ground still reads
-as south-facing. In the Southern Hemisphere it inverts every insolation, temperature
-and evapotranspiration conclusion you draw. Call the guard after computing aspect.
-
-## Resolution and what the data supports
-
-Ground-return density is the binding constraint, not the gridding. At the ~0.44
-ground points/m² of a standard wide-area survey a 3 m cell holds about four returns
-and roughly 4% voids; 1 m holds less than one and is mostly interpolation. Check
-`counts` before trusting a fine grid.
-
-## Worked example — 47 ha in the Snowy Monaro, NSW
+## What it found at 845 Avonside
 
 Two 2018 Geoscience Australia ELVIS tiles (ICSM Level 3, 0.44 ground points/m²,
 0.3 m vertical accuracy at 95% CI). 3.32 M ground returns gridded at **3 m** over the
@@ -72,3 +55,38 @@ minimum from 4841 MJ/m² at 10 m to 3477 at 3 m.*
 Grade is labelled in percent with degrees on the colourbar. 100% is 45°, and
 reporting one unit without the other invites exactly the confusion the colourbar is
 there to prevent.
+
+### The block divides into four parts along its own terrain
+
+![The four parts](docs/farm_four_parts.png)
+
+*The property is a narrow rectangle, 1914 m on a bearing of 108°, so the useful
+coordinate is distance along that axis rather than easting. Three terrain features
+cut it into four parts, each boundary a line in that axis frame.*
+
+| part | area | elevation | median grade | % north-facing | potential ET |
+|---|---|---|---|---|---|
+| Top farm | 11.6 ha | 1114–1197 m | 14% | 22% | 899 mm/yr |
+| Upper forest | 10.2 ha | 962–1169 m | 48% | 1.5% | 653 mm/yr |
+| Northerly woodland | 11.8 ha | 958–1051 m | 30% | 85% | 1018 mm/yr |
+| Lower forest flats | 12.7 ha | 888–1051 m | 29% | 5.5% | 809 mm/yr |
+
+The parts came out of the terrain nearly even in area, 10.2 to 12.7 ha, which nobody
+chose. What they are not even in is demand: **365 mm/yr separates the northerly
+woodland from the upper forest, 68% of annual rainfall, and the two share a
+boundary.** The slope break between the top farm and the upper forest is the sharpest
+line on the block, 29% grade to 53% across it. The southern creek enters from the
+neighbour's 28 ha catchment and runs diagonally northeast to the pond junction. The
+eastern crest is the real divide — east of it water leaves toward the flats, west of
+it toward the creek — and it is the least certain of the three, since the ridge is
+crisp at both ends and broad in the middle.
+
+## Methods
+
+The conventions this package enforces, the traps it exists to prevent, and what it
+deliberately does not do are in **[`docs/methods.md`](docs/methods.md)**.
+
+Methods and results are kept apart on purpose. The methods travel to any site and
+will be re-checked against new ground and simulated data; the findings above are one
+47 ha property in the Snowy Monaro, some of them specific to it and some likely to
+generalise. Either can then be argued with without disturbing the other.
