@@ -41,3 +41,17 @@ Three ways to place such a line, in increasing order of trust:
 Report the residual and let the owner move the line. A boundary that the person
 walking the ground disagrees with is wrong regardless of what the algorithm says,
 and the parts exist to be managed, not to be optimal.
+
+## Grade, not degrees — but label both
+
+Report slope as a percentage and put degrees on the colourbar. 100% is 45°, and
+quoting one unit without the other invites exactly the confusion the second axis is
+there to prevent: a "50% slope" sounds like half of vertical and is 26.6°.
+
+## Contours on a 3 m surface need smoothing; the lines do not need moving
+
+Return-density noise puts kinks in a contour that no walker would recognise. A 4.5 m
+Gaussian smooth before contouring removes them without displacing a line anywhere
+visible on the ground. Choose the interval from the terrain rather than by habit: at
+a median grade of 29% a 10 m interval puts lines about 35 m apart, legible on the
+steep faces where they crowd to 25 m and still informative on the benches.
