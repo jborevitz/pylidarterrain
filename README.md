@@ -21,7 +21,7 @@ around it.
 
 ## Where this sits
 
-Five small packages, one chain. Each does one thing and each is useful on its own.
+Six small packages, one chain. Each does one thing and each is useful on its own.
 
 | package | reads | gives you |
 |---|---|---|
@@ -30,6 +30,7 @@ Five small packages, one chain. Each does one thing and each is useful on its ow
 | [pyterrainwind](https://github.com/jborevitz/pyterrainwind) | that surface + reanalysis wind | wind exposure, and the extra demand it carries |
 | [pychannelform](https://github.com/jborevitz/pychannelform) | that surface | where the water goes: catchments, channels, long profiles |
 | [pylandstore](https://github.com/jborevitz/pylandstore) | channels + demand | where to hold water, and what it costs to move it uphill |
+| [pylandgraze](https://github.com/jborevitz/pylandgraze) | all of the above + a herd | where the animals should be, hour by hour and season by season |
 
 ## Quickstart
 
