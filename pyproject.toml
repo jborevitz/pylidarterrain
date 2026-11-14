@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Bare-earth DEMs and terrain derivatives from classified airborne LiDAR"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-dependencies = ["numpy>=1.24", "scipy>=1.10", "laspy>=2.5", "lazrs", "richdem>=0.3"]
+dependencies = ["numpy>=1.24", "scipy>=1.10", "laspy>=2.5", "lazrs"]
 
 [project.optional-dependencies]
 test = ["pytest>=7", "pandas>=2.0"]

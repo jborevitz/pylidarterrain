@@ -148,6 +148,23 @@ ceiling. `dieback_score` is exported as experimental for exactly this reason;
 see [docs/methods.md](docs/methods.md) for the full table and the negative
 results.
 
+### The block sits on a divide and feeds two catchments
+
+![Catchments feeding the property](docs/catchments_farm.png)
+
+Built from four ELVIS tiles over a 4 x 4 km block, so a catchment can be closed
+instead of stopping at the fence. The southern catchment (38 ha) closes entirely
+within the block and 30% of it lies inside the title boundary; the northern one
+is 215 ha with 14% inside. What you control is what you can change.
+
+![Steepness and wetness, four-tile block](docs/slope_twi_bivariate_4tile.png)
+
+Grade in percent against wetness ln(a/tan&beta;). The property runs at a median
+29% grade, 90th percentile 54%; 10% of it is wetter than TWI 7 and only 2% is
+both steep and wet. Flow routing is D-infinity, implemented here - the package
+no longer depends on richdem, and [docs/methods.md](docs/methods.md) records
+where a routing assumption changes a siting decision and where it does not.
+
 ## Methods
 
 The conventions this package enforces, the traps it exists to prevent, and what it

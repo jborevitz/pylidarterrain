@@ -178,3 +178,91 @@ contains tall healthy trees alongside the dead ones.
 `dieback_score` is exported as EXPERIMENTAL for testing on denser captures.  It
 is not a validated classifier at this density, and the `conjunction` method is
 published mainly so the negative result is reproducible.
+
+## Flow routing without a GPL dependency
+
+Depression filling and flow accumulation were previously delegated to richdem,
+which is GPLv3 and therefore blocks sharing code into MIT projects. Both are now
+implemented here:
+
+- `fill_depressions` is priority flood (Barnes, Lehman & Mulla 2014) with an
+  optional epsilon gradient across flats. On the 4 x 4 km 3 m block it runs in
+  1.9 s and raises 0.54% of cells, by at most 4.01 m.
+- `slope_aspect` is Horn's 3x3 finite difference. Against the richdem-derived
+  3 m grid over 51,467 farm cells it is IDENTICAL: r = 0.9999, median absolute
+  difference 0.000 deg on slope, and aspect differs by more than 10 deg in only
+  0.07% of cells - all of them flats, where aspect is undefined.
+- `flow_accumulation` offers `dinf` (Tarboton 1997, the default), `mfd`
+  (Freeman 1991) and `d8`. D-infinity takes 1.7 s on the same block.
+
+### Accumulation does NOT reproduce richdem, and the reason matters
+
+Slope and aspect match exactly; accumulation does not. Our D-infinity against
+richdem's D-infinity, on the same domain and the same fill, gives a wetness
+index correlation of only r = 0.773. Extending the DEM from two tiles to four is
+NOT the explanation - our own four-tile and two-tile results agree at r = 0.9994,
+because land BELOW the farm adds no upslope area to it.
+
+Where the disagreement sits is the useful part. Median absolute TWI difference
+by wetness band, for two D-infinity implementations and for two ALGORITHMS run
+from identical code:
+
+| wetness band | ours vs richdem (both D-inf) | MFD vs D-inf (same code) |
+|---|---|---|
+| TWI 2-3 (ridges) | 0.89 | 0.82 |
+| TWI 4-6 (hillslopes) | 0.57-0.64 | 0.41-0.42 |
+| TWI 7-9 (hollows) | 0.75-0.89 | 0.45-0.49 |
+| TWI 11+ (channels) | 0.02-0.05 | 0.17-0.22 |
+
+Two implementations of the SAME algorithm converge in channels; two different
+algorithms still differ there by about 0.2, far less than the 0.4-0.9 they
+differ by on hillslopes. So a channel structure - a leaky weir, a crossing - is
+much less sensitive to the routing assumption than a hillslope work is, though
+not wholly insensitive.
+
+For planning the harder problem is that hillslope RANKING is unstable: among
+hillslope cells (TWI < 9) the methods agree on only 55-66% of the wettest
+decile, so about a third of candidate contour-bank sites move when the
+assumption changes.
+
+None of these algorithms is "true". They are three assumptions about how far
+water spreads before it collects: D8 sends everything down one thread, MFD
+divides between all lower neighbours, D-infinity splits between the two
+neighbours bounding a continuous flow angle. D-infinity is the default as the
+usual choice for a wetness index, but treat a hillslope value as
+assumption-dependent and check it on the ground before building anything.
+
+![Where the methods disagree](twi_method_disagreement.png)
+
+## The four-tile block, and which catchments it closes
+
+The DEM is built from four Berridale 2018 ELVIS tiles covering
+E 652000-656000 / N 5964000-5968000 - 1333 x 1333 cells at 3 m, elevation
+779.5-1223.6 m, 3.86% voids before filling. It rebuilds in about 1.6 s:
+
+```python
+grid = Grid(652000, 5964000, 656000, 5968000, 3.0)
+dem, count = build_dem(sorted(glob.glob("*.laz")), grid)
+dem = fill_voids(dem)
+```
+
+The DEM array is deliberately NOT committed. Rebuilding from the tiles is faster
+than cloning a 7 MB binary, and a committed array silently goes stale against the
+code that made it.
+
+The southern pair of tiles is what lets a catchment be closed rather than cut off
+at the property fence. Against the 46.81 ha title boundary, the block drains
+three ways:
+
+| catchment | area | on the property | outlet | complete? |
+|---|---|---|---|---|
+| Northern | 215 ha | 30.4 ha (14%) | 862 m | slightly clipped |
+| Southern | 38 ha | 11.5 ha (30%) | 811 m | **closed within the window** |
+| Western | >375 ha | 4.8 ha (1%) | 1021 m | badly truncated |
+
+The share of a catchment lying inside the boundary is what decides whether works
+can change its flow: 30% in the south, 1% in the west. Only the southern
+catchment closes inside the tile block, so it is the only one where a water
+balance can be struck without an open boundary.
+
+![Catchments feeding the property](catchments_farm.png)
