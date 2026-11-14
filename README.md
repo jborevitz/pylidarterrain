@@ -113,6 +113,41 @@ is the real divide — east of it water leaves toward the flats, west of it towa
 creek — and it is the least certain of the three, since the ridge is crisp at both
 ends and broad in the middle.
 
+### Canopy structure: three states, and one the data cannot resolve
+
+Each 10 m cell gets its own ground plane and its own vertical distribution — a
+Gaussian ground component plus a skew-normal canopy component, fitted to
+pulse-weighted heights above that plane. No crown segmentation, so a tree that
+has died back and reshot into several sub-crowns is still one well-defined
+profile.
+
+![Canopy structure over the farm, 10 m cells](docs/stand_condition_10m.png)
+
+Reading the panels: canopy top carries most of the structural signal; the low
+regrowth layer (1.5–4 m) is concentrated at the eastern, lower end; **relict
+cover** — the surviving tall stems and dead branches above 8 m — is its mirror
+image. The classification into open grass, low shrubland, tall forest with a
+dense low layer, and intact tall forest matches the owner's field knowledge of
+the block.
+
+The ground plane is what makes this work on steep country. Tall-tree cells here
+sit at a median 26.6° slope, so the bare earth falls 2.8 m across a 10 m cell
+(7.5 m in the worst cell). Fitting a plane rather than cutting a single
+elevation leaves a ground roughness of 0.12–0.19 m, and tree heights are then
+measured from the ground a tree actually stands on.
+
+![Four cells on their true elevation axis](docs/cell_fits_elevation.png)
+
+What it will *not* do is tell a died-back stand from an intact one on its own.
+The obvious construction — require a dense low layer *and* tall relict stems at
+once — was tested against a field-identified dieback site and failed (AUC
+0.582), because relict cover is mostly just a height measure. The strongest
+indicator found, once stands are matched for height, is low-layer cover at AUC
+0.692. At 0.81 pulses/m² with no within-crown sampling, that is close to the
+ceiling. `dieback_score` is exported as experimental for exactly this reason;
+see [docs/methods.md](docs/methods.md) for the full table and the negative
+results.
+
 ## Methods
 
 The conventions this package enforces, the traps it exists to prevent, and what it
