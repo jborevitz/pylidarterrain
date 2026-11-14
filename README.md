@@ -130,6 +130,58 @@ image. The classification into open grass, low shrubland, tall forest with a
 dense low layer, and intact tall forest matches the owner's field knowledge of
 the block.
 
+### A dieback index, and the one change that made it work
+
+Dieback here is a change of stand *form*, not of crown openness: the big stems
+die back or fall, new shoots come up, and from above the stand starts to look
+like shrubland. Separating that from real shrubland needs the relict stems —
+so the index must be high only where a **tall mode and a dense low layer
+coexist**.
+
+![Four readings of the same 10 m cells](docs/dieback_methods_10m.png)
+
+    dieback_index = min(top_height / height_ref, 1) ** 2  *  low-layer density
+
+**The normalisation is the whole point, and it is where every earlier attempt
+failed.** The low-layer term divides by **total pulse weight, including returns
+from bare ground** — not by canopy weight. A canopy-weight *share* is
+scale-free: a sparse tall stand and a dense tall stand with the same vertical
+shape return exactly the same number, so a share can never see a canopy
+thinning out. Against the total, "thin canopy with a lot underneath" becomes a
+quantity you can read. Eighteen variants of a canopy-share conjunction score
+were swept at Avonside and none of them worked; changing the denominator did.
+`band_weight(..., normalise="total"|"canopy")` exposes both so the difference
+can be checked on any new capture.
+
+The second panel above is that term on its own; the third is the same term
+gated by absolute height. The gate is what stops plain shrubland scoring
+highly, and it is squared so the penalty bites.
+
+What the index is **not** is a height map. Over the same cells it correlates
+with canopy top at Spearman +0.05 and with overstorey share above 12 m at
+−0.08, but with the low layer at +0.83. That matters because at Avonside height
+alone already separates the field classes at AUC 0.84 — so an index that
+tracked height would add nothing, and panel 1 above is close to that trap. Its
+own headline AUC of 0.90 came from a circular comparison whose "intact" class
+had been selected by height in the first place.
+
+**Validation status: not a validated classifier.** Against the one
+field-confirmed tall-dieback site the index separates strongly from shrubland
+(AUC 0.673, p<0.001 against the sampling null) but only weakly from intact tall
+forest (0.641, p=0.115 — the null reproduces most of it from height
+composition), recovering significance only once stand height is controlled for
+(0.628 height-matched, p=0.015). Seventeen field-checked trees and one impure
+reference site can define a signal and kill bad candidates; they cannot
+validate a classifier. A multi-epoch capture at higher density is what this
+needs, and testing the index against **change** rather than a single snapshot
+is the stronger test.
+
+**Sixty per cent of tree units cannot be measured at all** at 0.8 pulses/m².
+The units that fall below the floor are systematically the low, dense ones —
+which is the died-back form itself — so an unassessed fraction must be reported
+alongside any summary, never scored as zero. `dieback_index` returns `nan`
+rather than a number when the floor is not met.
+
 The ground plane is what makes this work on steep country. Tall-tree cells here
 sit at a median 26.6° slope, so the bare earth falls 2.8 m across a 10 m cell
 (7.5 m in the worst cell). Fitting a plane rather than cutting a single

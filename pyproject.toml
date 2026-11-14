@@ -4,14 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pylidarterrain"
-version = "0.1.0"
-description = "Bare-earth DEMs and terrain derivatives from classified airborne LiDAR"
+version = "0.2.0"
+description = "Bare-earth DEMs, terrain derivatives and canopy dieback structure from classified airborne LiDAR"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 dependencies = ["numpy>=1.24", "scipy>=1.10", "laspy>=2.5", "lazrs"]
 
 [project.optional-dependencies]
-test = ["pytest>=7", "pandas>=2.0"]
+crowns = ["scikit-image>=0.21"]
+
+test = ["pytest>=7", "pandas>=2.0", "scikit-image>=0.21"]
 
 [tool.setuptools.packages.find]
 include = ["pylidarterrain*"]

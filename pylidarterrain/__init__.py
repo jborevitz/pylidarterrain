@@ -12,10 +12,15 @@ from .horizon import horizon_angles, sky_view_factor
 from .checks import assert_north_up
 from .canopy import (ground_plane, heights_above_plane, fit_cell, canopy_top,
                      stratum_cover, canopy_skewness, dieback_score, fit_cloud)
+from .stand import (top_height, band_weight, dieback_index, stand_state,
+                    profile_null, MIN_RETURNS)
+from . import units
 
 __all__ = ["build_dem","fill_voids","Grid","slope_aspect","flow_dirs",
            "flow_accumulation","twi","fill_depressions","horizon_angles",
            "sky_view_factor","assert_north_up",
            "ground_plane","heights_above_plane","fit_cell","canopy_top",
-           "stratum_cover","canopy_skewness","dieback_score","fit_cloud"]
-__version__ = "0.1.0"
+           "stratum_cover","canopy_skewness","dieback_score","fit_cloud",
+           "top_height","band_weight","dieback_index","stand_state",
+           "profile_null","MIN_RETURNS","units"]
+__version__ = "0.2.0"

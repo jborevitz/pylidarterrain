@@ -270,3 +270,110 @@ western 1.8 km. So the southern is the closest to a water balance without an
 open boundary, but its area is still a lower bound.
 
 ![Catchments feeding the property](catchments_farm.png)
+
+## The dieback index, and why the denominator is the method
+
+Three readings of the same 10 m cells are shipped, and they do not measure the
+same thing. Keeping them straight is the point of this section.
+
+| reading | what it reduces the within-cell distribution to | API |
+|---|---|---|
+| overstorey share | weight above a hard 12 m cut, ÷ canopy weight | `stratum_cover` |
+| fitted canopy top | 0.95 quantile of a fitted skew-normal canopy component | `fit_cell` + `canopy_top` |
+| dieback index | mean of the 3 highest returns, and weight in 0.5–4 m ÷ **total** weight | `top_height` + `band_weight` |
+
+The first two are parametric or threshold-based and both are dominated by stand
+height. The third is two empirical moments combined continuously, with no
+thresholds and no model selection.
+
+### Share versus density
+
+The low-layer term divides by total pulse weight, ground returns included:
+
+    low_density = weight(0.5 m ≤ h < 4 m) / weight(all returns)
+
+not by canopy weight. This is the single change that moved the result. A
+canopy-weight share is scale-free — multiply every canopy return by a constant
+and the share is unchanged — so it cannot distinguish a thinning overstorey
+from an intact one with the same vertical shape. Dieback is precisely a loss of
+density under a retained height, so a share is blind to it by construction.
+
+At Avonside an 18-variant sweep of canopy-share conjunction scores
+(`shrub_dominance × relict_presence`, several bands and cuts) never exceeded
+min-AUC 0.589 against intact forest. A unit-level score built the same way
+scored the field-confirmed dieback site at +0.25, on the intact side of its own
+axis. Re-normalising the low-layer term by total weight and adding the height
+gate raised worst-case separation to 0.641 across three contrasts.
+
+`band_weight(r, w, normalise="total"|"canopy")` ships both, and
+`tests/test_stand.py::test_canopy_share_cannot_see_a_thinning_canopy_but_total_can`
+pins the difference.
+
+### The height gate
+
+    gate = min(top_height / height_ref, 1) ** power        height_ref=15, power=2
+
+Without it the index is a shrubland detector: at 0.8 pulses/m² the share of
+returned energy in 0.5–4 m runs 77.9% in short units (2–6 m), 26.2% in mid
+units and 17.4% in tall units, and 13% of tall units record **zero** weight
+there. The low band can only fire where the canopy is already open. The gate
+restores the conjunction — tall *and* dense beneath — that the field
+description calls for.
+
+`height_ref` must be set from the mature stand height of the target forest; 15 m
+suits montane eucalypt forest and will not transfer unchanged.
+
+### Reading an observed separation
+
+`profile_null` resamples each unit's vegetation returns from the pooled
+relative-height distribution rescaled to that unit's **own** top height, so
+area, return count, weights and top height are all preserved and only the
+vertical arrangement is randomised.
+
+Compare observed contrasts against this null, **never against 0.5**. The null
+preserves height, so it reproduces roughly half of a height-only contrast and
+about a third of a return-density contrast; only the excess above it is
+attributable to arrangement. At Avonside this is exactly what demoted the
+headline result: the dieback site separates from intact forest at AUC 0.641,
+but the null returns 0.588 and the contrast does not clear it (p=0.115). It
+clears only once units are matched on height (0.628 against a null of 0.526,
+p=0.015). The same control previously showed that clusters in an earlier score
+were reproduced by pure noise — the null is not optional.
+
+### The measurement floor is a result, not a nuisance
+
+`dieback_index` returns `nan` below `MIN_RETURNS` vegetation returns. At
+0.8 pulses/m² the median crown holds 81 returns and only 45 above 0.5 m; after
+the 10 m scoring cap the median unit holds 24, and 60% of units fall below a
+30-return floor. The units that fall below it are systematically the low, dense
+ones — the died-back form itself.
+
+The worked case is the most severely died-back tree in the field notes: its
+crown is 6.75 m² with **three returns in total**, two above 0.5 m. No vertical
+statistic exists for it at any threshold. "Enough canopy to find" and "enough
+canopy to measure" are nearly the same threshold here, so damage reads as
+absence. Report the unassessed fraction of area alongside every summary.
+
+### Units of scoring
+
+`units.cap_units` splits any crown wider than `cap_diameter` onto the analysis
+grid, because a 40×40 m crown object is really many large trees and each part
+should carry its own score. Seed separation cannot do this: seeds control how
+many segments exist, not how far each grows — sweeping separation at 3/4/5/6 m
+gave 2,905/2,122/2,122/1,464 crowns with 32%/48.5%/48.5%/63.4% still over 10 m.
+
+The cap is not free. It drops median vegetation returns per object from 45 to
+24 and the share of objects clearing the profile floor from about 70% to 40%.
+State that cost wherever the cap is used.
+
+### Reproduction
+
+The Avonside farm-wide run (two ELVIS tiles, 46.81 ha title boundary, 1.32 M
+returns after removing classes 7/12/18) through the packaged API gives 2,122
+crowns, 4,209 units after the 10 m cap, 4,107 with a computable profile and
+1,641 clearing the 30-return floor, median index 0.0496.
+`tests/test_units.py::test_end_to_end_on_the_avonside_window` pins a 150 m
+window of the same capture around the field site.
+
+Note `units` is `origin="lower"` (row 0 = southern edge) while `dem` is
+north-up. Do not mix them without flipping.
