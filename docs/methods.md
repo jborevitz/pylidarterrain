@@ -225,6 +225,8 @@ hillslope cells (TWI < 9) the methods agree on only 55-66% of the wettest
 decile, so about a third of candidate contour-bank sites move when the
 assumption changes.
 
+![How the three routing methods move water](flow_routing_schematic.png)
+
 None of these algorithms is "true". They are three assumptions about how far
 water spreads before it collects: D8 sends everything down one thread, MFD
 divides between all lower neighbours, D-infinity splits between the two
