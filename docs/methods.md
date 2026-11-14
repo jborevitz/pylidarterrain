@@ -259,12 +259,14 @@ three ways:
 | catchment | area | on the property | outlet | complete? |
 |---|---|---|---|---|
 | Northern | 215 ha | 30.4 ha (14%) | 862 m | slightly clipped |
-| Southern | 38 ha | 11.5 ha (30%) | 811 m | **closed within the window** |
+| Southern | 38 ha | 11.5 ha (30%) | 811 m | nearly closed, 18 m of rim cut |
 | Western | >375 ha | 4.8 ha (1%) | 1021 m | badly truncated |
 
 The share of a catchment lying inside the boundary is what decides whether works
-can change its flow: 30% in the south, 1% in the west. Only the southern
-catchment closes inside the tile block, so it is the only one where a water
-balance can be struck without an open boundary.
+can change its flow: 30% in the south, 1% in the west. NONE of the three is
+strictly closed by the tile block - measured as boundary cells falling on the
+window edge, the southern loses 18 m of its rim, the northern 190 m and the
+western 1.8 km. So the southern is the closest to a water balance without an
+open boundary, but its area is still a lower bound.
 
 ![Catchments feeding the property](catchments_farm.png)

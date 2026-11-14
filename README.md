@@ -153,9 +153,10 @@ results.
 ![Catchments feeding the property](docs/catchments_farm.png)
 
 Built from four ELVIS tiles over a 4 x 4 km block, so a catchment can be closed
-instead of stopping at the fence. The southern catchment (38 ha) closes entirely
-within the block and 30% of it lies inside the title boundary; the northern one
-is 215 ha with 14% inside. What you control is what you can change.
+instead of stopping at the fence. The southern catchment (38 ha) is all but closed
+within the block - 18 m of its rim is cut by the window edge, against 190 m for
+the 215 ha northern one - and 30% of it lies inside the title boundary against
+14% in the north. What you control is what you can change.
 
 ![Steepness and wetness, four-tile block](docs/slope_twi_bivariate_4tile.png)
 
